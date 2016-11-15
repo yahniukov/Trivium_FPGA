@@ -10,8 +10,8 @@ entity Trivium_Module is
            init  : in STD_LOGIC;
            reset : in STD_LOGIC;
            
-           K  : in STD_LOGIC_VECTOR (DATA_LENGTH-1 downto 0);
-           IV : in STD_LOGIC_VECTOR (DATA_LENGTH-1 downto 0);
+           K_for_keys  : in STD_LOGIC_VECTOR (DATA_LENGTH-1 downto 0);
+           IV_for_keys : in STD_LOGIC_VECTOR (DATA_LENGTH-1 downto 0);
            
            open_text : in STD_LOGIC
            );
@@ -26,6 +26,10 @@ architecture RTL of Trivium_Module is
     signal initialize_ready : std_logic;
     signal current_key      : std_logic;
     signal internal_reset   : std_logic;
+    
+    -- Regs
+    signal K_reg  : STD_LOGIC_VECTOR (DATA_LENGTH-1 downto 0);
+    signal IV_reg : STD_LOGIC_VECTOR (DATA_LENGTH-1 downto 0);
 
     -----------------------------
     --------- COMPONENTS --------
@@ -46,19 +50,15 @@ architecture RTL of Trivium_Module is
     end component;    
 
 begin
-
-    -- Reset process
-    internal_reset <= reset;
     
-    reset_process : process(reset)
+    -- Init process
+    init_process : process(init)
     begin
-        if(rising_edge(reset)) then
-            initialize_ready <= '0';
-            current_key <= '0';
-            internal_reset <= '1';
-            internal_reset <= '0';
+        if(rising_edge(init)) then
+            K_reg <= K_for_keys;
+            IV_reg <= IV_for_keys;
         end if;
-    end process reset_process;
+    end process init_process;
     
     -- Getting new key from key sequence
     Key_Sequence_Module_1 : Key_Sequence_Module
@@ -66,13 +66,13 @@ begin
                finish => initialize_ready,
                clock => clock,
                init => init,
-               reset => internal_reset,
-               K => K,
-               IV => IV 
+               reset => reset,
+               K => K_reg,
+               IV => IV_reg 
                );
                
     -- Main process
-    main_process : process(clock)
+    main_process : process(clock, initialize_ready)
     begin
         if(rising_edge(clock) and initialize_ready <= '1') then
             cipher_text <= open_text xor current_key;
