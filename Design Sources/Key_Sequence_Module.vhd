@@ -28,7 +28,8 @@ architecture RTL of Key_Sequence_Module is
     -----------------------------
     
     -- Init state
-    signal s : std_logic_vector (INIT_STATE_LENGTH-1 downto 0);
+    signal s         : std_logic_vector (INIT_STATE_LENGTH-1 downto 0);
+    signal init_done : std_logic;
 
 begin
 
@@ -61,16 +62,18 @@ begin
                 s(176 downto 94) <= s(175 downto 93); s(93) <= t1;
                 s(287 downto 178) <= s(286 downto 177); s(177) <= t2;
             end loop;
-            finish <= '1';
+            init_done <= '1';
         end if;
     end process init_process;
+    
+    finish <= init_done;
     
     -- Main process
     main_process : process(clock)
         variable t1, t2, t3 : std_logic := '0';
         variable i : integer;
     begin
-        if(rising_edge(clock)) then
+        if(rising_edge(clock) and init_done = '1') then
             t1 := s(65) xor s(92);
             t2 := s(161) xor s(176);
             t3 := s(242) xor s(287);
