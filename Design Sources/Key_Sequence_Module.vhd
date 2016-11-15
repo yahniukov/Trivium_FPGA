@@ -48,10 +48,10 @@ begin
         if(rising_edge(init)) then
             s(79  downto 0)   <= K(79 downto 0);
             s(92  downto 80)  <= (others => '0');
-            s(173 downto 93)  <= IV(79 downto 0);
-            s(176 downto 174) <= (others => '0');
-            s(284 downto 177) <= (others => '0');
-            s(288 downto 285) <= (others => '1');
+            s(172 downto 93)  <= IV(79 downto 0);
+            s(175 downto 173) <= (others => '0');
+            s(283 downto 176) <= (others => '0');
+            s(287 downto 284) <= (others => '1');
             for i in 1 to 4 * 288 loop
                 t1 := s(65) xor (s(90) and s(91)) xor s(92) xor s(170);
                 t2 := s(161) xor (s(174) and s(175)) xor s(176) xor s(263); 

@@ -50,9 +50,9 @@ begin
     -- Reset process
     internal_reset <= reset;
     
-    reset_process : process(reset, K, IV)
+    reset_process : process(reset)
     begin
-        if(rising_edge(reset) or K'event or IV'event) then
+        if(rising_edge(reset)) then
             initialize_ready <= '0';
             current_key <= '0';
             internal_reset <= '1';
