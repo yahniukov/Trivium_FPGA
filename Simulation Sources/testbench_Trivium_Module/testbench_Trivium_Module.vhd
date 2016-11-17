@@ -18,10 +18,9 @@ architecture Behavioral of testbench_Trivium_Module is
         
                clock : in STD_LOGIC;
                init  : in STD_LOGIC;
-               reset : in STD_LOGIC;
                
-               K_for_keys  : in STD_LOGIC_VECTOR (DATA_LENGTH-1 downto 0);
-               IV_for_keys : in STD_LOGIC_VECTOR (DATA_LENGTH-1 downto 0);
+               K  : in STD_LOGIC_VECTOR (DATA_LENGTH-1 downto 0);
+               IV : in STD_LOGIC_VECTOR (DATA_LENGTH-1 downto 0);
                
                open_text : in STD_LOGIC
                );
@@ -33,7 +32,6 @@ architecture Behavioral of testbench_Trivium_Module is
     
     signal klok       : std_logic := '0';
     signal initialize : std_logic := '0';
-    signal recet      : std_logic := '0';
     signal o_text     : std_logic := '1';
     
     signal K  : std_logic_vector(79 downto 0) := (others => '0'); 
@@ -43,18 +41,17 @@ architecture Behavioral of testbench_Trivium_Module is
 
 begin
 
-    UUT : Trivium_Module port map(result, klok, initialize, recet, K, IV, o_text);
+    UUT : Trivium_Module port map(result, klok, initialize, K, IV, o_text);
     
-    klok <= not klok after 10 ns;
+    klok <= not klok after 20 ns;
+    o_text <= not o_text after 40 ns;
     
     test : process
     begin
-        recet <= '1';
-        wait for 5 ns;
-        recet <= '0';
         initialize <= '1';
         wait for 5 ns;
         initialize <= '0';
+        wait;
     end process test;
 
 end Behavioral;
